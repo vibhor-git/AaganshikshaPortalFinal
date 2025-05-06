@@ -23,7 +23,7 @@ class User(UserMixin, db.Model):
     activities = db.relationship('Activity', backref='created_by', lazy=True)
     inventory_requests = db.relationship('InventoryRequest',
                                       foreign_keys='InventoryRequest.user_id',
-                                      backref=db.backref('requested_by', lazy='joined'),
+                                      backref=db.backref('requester', lazy='joined'),
                                       lazy='dynamic',
                                       cascade='all, delete-orphan')
     
