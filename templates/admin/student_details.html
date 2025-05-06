@@ -1,4 +1,3 @@
-
 {% extends 'base.html' %}
 
 {% block title %}Aaganshiksha - Student Details{% endblock %}
@@ -37,34 +36,34 @@
                             {{ student.gender|capitalize }}
                         </span>
                     </div>
-                    
+
                     <hr>
-                    
+
                     <div class="mb-3">
                         <label class="text-muted d-block">Parent Name:</label>
                         <div class="fw-bold">{{ student.parent_name }}</div>
                     </div>
-                    
+
                     <div class="mb-3">
                         <label class="text-muted d-block">Parent Contact:</label>
                         <div class="fw-bold">{{ student.parent_contact }}</div>
                     </div>
-                    
+
                     <div class="mb-3">
                         <label class="text-muted d-block">Address:</label>
                         <div class="fw-bold">{{ student.address }}</div>
                     </div>
-                    
+
                     <div class="mb-3">
                         <label class="text-muted d-block">Aadhar Number:</label>
                         <div class="fw-bold">{{ "XXXX-XXXX-" + student.aadhar_number[-4:] }}</div>
                     </div>
-                    
+
                     <div class="mb-3">
                         <label class="text-muted d-block">Enrollment Date:</label>
                         <div class="fw-bold">{{ student.enrollment_date.strftime('%d %B, %Y') }}</div>
                     </div>
-                    
+
                     <div class="d-grid gap-2 mt-4">
                         <a href="{{ url_for('admin.students') }}" class="btn btn-outline-primary">
                             <i class="fas fa-edit me-2"></i>Manage Students
@@ -73,7 +72,7 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- Center and Attendance Column -->
         <div class="col-lg-8">
             <!-- Center Information -->
@@ -109,7 +108,7 @@
                     </a>
                 </div>
             </div>
-            
+
             <!-- Attendance Records -->
             <div class="card mb-4">
                 <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
@@ -173,15 +172,15 @@
         // Filter attendance records
         const filterButtons = document.querySelectorAll('.filter-btn');
         const attendanceRows = document.querySelectorAll('.attendance-row');
-        
+
         filterButtons.forEach(button => {
             button.addEventListener('click', function() {
                 // Update active button
                 filterButtons.forEach(btn => btn.classList.remove('active'));
                 this.classList.add('active');
-                
+
                 const filter = this.getAttribute('data-filter');
-                
+
                 // Show/hide rows based on filter
                 attendanceRows.forEach(row => {
                     if (filter === 'all' || row.getAttribute('data-status') === filter) {
@@ -192,7 +191,7 @@
                 });
             });
         });
-        
+
         // Set 'All' as default active filter
         document.querySelector('[data-filter="all"]').classList.add('active');
     });
