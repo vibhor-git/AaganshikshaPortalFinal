@@ -10,6 +10,11 @@ A web portal for managing Anganwadi centers, students, teachers, and activities.
 
 ## Installation & Setup
 
+On Windows:
+```
+python -m venv venv
+venv\Scripts\activate
+
 1. Clone the repository:
 ```bash
 git clone https://github.com/yourusername/aaganshiksha-portal.git
