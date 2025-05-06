@@ -395,36 +395,45 @@ def request_inventory():
     center = Center.query.get(current_user.center_id)
     if center:
         form.center_id.choices = [(center.id, center.name)]
+        # Pre-select the teacher's center
+        form.center_id.data = current_user.center_id
     else:
         form.center_id.choices = []
     
-    if form.validate_on_submit():
-        try:
-            # Set center_id directly from current_user
-            inventory_request = InventoryRequest(
-                item_name=form.item_name.data,
-                quantity=form.quantity.data,
-                unit=form.unit.data,
-                description=form.description.data,
-                center_id=current_user.center_id,  # Use teacher's center directly
-                user_id=current_user.id,
-                status='pending'
-            )
-            
-            db.session.add(inventory_request)
-            db.session.commit()
-            
-            # Update pending_requests_count in admin dashboard
-            pending_requests_count = InventoryRequest.query.filter_by(status='pending').count()
-            print(f"Created inventory request: {inventory_request.id}, {inventory_request.item_name}, User: {inventory_request.user_id}, Center: {inventory_request.center_id}")
-            print(f"Current pending requests: {pending_requests_count}")
-            
-            flash('Inventory request submitted successfully! It will be reviewed by an admin.', 'success')
-            return redirect(url_for('teacher.inventory'))
-        except Exception as e:
-            db.session.rollback()
-            print(f"Error creating inventory request: {str(e)}")
-            flash(f'Error submitting request: {str(e)}', 'danger')
+    if request.method == 'POST':
+        # Debug print
+        print(f"Form submitted: {request.form}")
+        print(f"Form validated: {form.validate()}")
+        if form.validate():
+            try:
+                # Set center_id directly from current_user
+                inventory_request = InventoryRequest(
+                    item_name=form.item_name.data,
+                    quantity=form.quantity.data,
+                    unit=form.unit.data,
+                    description=form.description.data,
+                    center_id=current_user.center_id,  # Use teacher's center directly
+                    user_id=current_user.id,
+                    status='pending'
+                )
+                
+                db.session.add(inventory_request)
+                db.session.commit()
+                
+                # Update pending_requests_count in admin dashboard
+                pending_requests_count = InventoryRequest.query.filter_by(status='pending').count()
+                print(f"Created inventory request: {inventory_request.id}, {inventory_request.item_name}, User: {inventory_request.user_id}, Center: {inventory_request.center_id}")
+                print(f"Current pending requests: {pending_requests_count}")
+                
+                flash('Inventory request submitted successfully! It will be reviewed by an admin.', 'success')
+                return redirect(url_for('teacher.inventory'))
+            except Exception as e:
+                db.session.rollback()
+                print(f"Error creating inventory request: {str(e)}")
+                flash(f'Error submitting request: {str(e)}', 'danger')
+        else:
+            print(f"Form errors: {form.errors}")
+            flash('Please correct the errors in the form.', 'danger')
             
     return render_template('teacher/inventory_request.html', form=form)
 
