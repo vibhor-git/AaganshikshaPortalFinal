@@ -51,7 +51,7 @@
                     </div>
                     
                     <form method="POST" action="{{ url_for('auth.login') }}" class="animate__animated animate__fadeInUp">
-                        {{ form.hidden_tag() }}
+                        {{ form.csrf_token }}
                         <input type="hidden" id="selected-role" name="selected_role" value="admin">
                         
                         <div class="mb-4">
@@ -115,6 +115,22 @@
 {% endblock %}
 
 {% block scripts %}
+<script>
+function switchRole(role) {
+    // Update the selected role input
+    document.getElementById('selected-role').value = role;
+    
+    // Update the visual appearance
+    document.getElementById('admin-tab').classList.remove('active');
+    document.getElementById('teacher-tab').classList.remove('active');
+    document.getElementById(role + '-tab').classList.add('active');
+}
+
+// Initialize with admin role selected
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('admin-tab').classList.add('active');
+});
+</script>
 <script>
     function togglePasswordVisibility(inputId, iconId) {
         const passwordInput = document.getElementById(inputId);
