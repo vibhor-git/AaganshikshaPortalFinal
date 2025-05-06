@@ -5,16 +5,11 @@ block content %}
   <div class="container">
     <div class="row align-items-center">
       <div class="col-lg-6 animate__animated animate__fadeInLeft">
-          <div class="d-flex align-items-center mb-3">
-            <h1 class="hero-title me-3 mb-0">Welcome to Aaganshiksha</h1>
-            <div class="d-flex align-items-center">
-              <img src="{{ url_for('static', filename='images/indian_flag.png') }}" alt="Indian Flag" style="width: 70px; height: auto; box-shadow: 0 2px 6px rgba(0,0,0,0.2); border-radius: 4px;">
-            </div>
-          </div>
-          <p class="hero-subtitle mb-4">
-            A digital platform that transforms early childhood education by
-            connecting Aganwadi centers with students, parents, and educators.
-          </p>
+        <h1 class="hero-title mb-4">Welcome to Aaganshiksha</h1>
+        <p class="hero-subtitle mb-4">
+          A digital platform that transforms early childhood education by
+          connecting Aganwadi centers with students, parents, and educators.
+        </p>
         <div class="d-flex gap-3">
           <a href="{{ url_for('home.about') }}" class="btn btn-light btn-lg"
             >Learn More</a
@@ -781,7 +776,7 @@ block content %}
       link.addEventListener('click', function(e) {
         e.preventDefault();
         const tipId = this.dataset.tipId;
-
+        
         fetch(`/api/nutrition-tips/${tipId}`)
           .then(response => {
             if (!response.ok) {
@@ -814,7 +809,7 @@ block content %}
       link.addEventListener('click', function(e) {
         e.preventDefault();
         const activityId = this.dataset.activityId;
-
+        
         fetch(`/api/activities/${activityId}`)
           .then(response => {
             if (!response.ok) {
