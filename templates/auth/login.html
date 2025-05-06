@@ -51,7 +51,7 @@
                     </div>
                     
                     <form method="POST" action="{{ url_for('auth.login') }}" class="animate__animated animate__fadeInUp">
-                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() if csrf_token else '' }}">
                         <input type="hidden" id="selected-role" name="selected_role" value="admin">
                         
                         <div class="mb-4">
