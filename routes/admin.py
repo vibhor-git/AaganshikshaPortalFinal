@@ -547,17 +547,19 @@ def inventory_requests():
     
     # Debug print with more details
     print(f"Found {len(requests)} inventory requests")
-    for req in requests:
-        print(f"Request: {req.id}, {req.item_name}, User: {req.user_id}, Status: {req.status}")
     
-    # Get the associated users and centers for each request
-    for req in requests:
-        # Make sure we can access the user and center
-        user = User.query.get(req.user_id)
-        center = Center.query.get(req.center_id)
-        print(f"User: {user.username if user else 'Unknown'}, Center: {center.name if center else 'Unknown'}")
+    # Join with User and Center tables to get complete data in one query
+    requests_with_data = db.session.query(
+        InventoryRequest,
+        User.username.label('requester_name'),
+        Center.name.label('center_name')
+    ).join(
+        User, User.id == InventoryRequest.user_id
+    ).join(
+        Center, Center.id == InventoryRequest.center_id
+    ).order_by(InventoryRequest.created_at.desc()).all()
     
-    return render_template('admin/inventory_requests.html', inventory_requests=requests)
+    return render_template('admin/inventory_requests.html', inventory_requests=requests_with_data)
 
 @admin_bp.route('/inventory-requests/approve/<int:id>', methods=['POST'])
 @login_required
@@ -565,23 +567,33 @@ def inventory_requests():
 def approve_inventory_request(id):
     inventory_request = InventoryRequest.query.get_or_404(id)
 
-    # Create a new inventory item based on the request
-    inventory = Inventory(
-        item_name=inventory_request.item_name,
-        quantity=inventory_request.quantity,
-        unit=inventory_request.unit,
-        description=inventory_request.description,
-        center_id=inventory_request.center_id
-    )
+    # Only approve if it's pending
+    if inventory_request.status != 'pending':
+        flash('This request has already been processed.', 'warning')
+        return redirect(url_for('admin.inventory_requests'))
 
-    # Update request status
-    inventory_request.status = 'approved'
-    inventory_request.updated_at = datetime.utcnow()
+    try:
+        # Create a new inventory item based on the request
+        inventory = Inventory(
+            item_name=inventory_request.item_name,
+            quantity=inventory_request.quantity,
+            unit=inventory_request.unit,
+            description=inventory_request.description,
+            center_id=inventory_request.center_id
+        )
 
-    db.session.add(inventory)
-    db.session.commit()
+        # Update request status
+        inventory_request.status = 'approved'
+        inventory_request.updated_at = datetime.utcnow()
 
-    flash('Inventory request approved and item added to inventory!', 'success')
+        db.session.add(inventory)
+        db.session.commit()
+
+        flash('Inventory request approved and item added to inventory!', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Error approving request: {str(e)}', 'danger')
+    
     return redirect(url_for('admin.inventory_requests'))
 
 @admin_bp.route('/inventory-requests/reject/<int:id>', methods=['POST'])
@@ -590,13 +602,23 @@ def approve_inventory_request(id):
 def reject_inventory_request(id):
     inventory_request = InventoryRequest.query.get_or_404(id)
 
-    # Update request status
-    inventory_request.status = 'rejected'
-    inventory_request.updated_at = datetime.utcnow()
+    # Only reject if it's pending
+    if inventory_request.status != 'pending':
+        flash('This request has already been processed.', 'warning')
+        return redirect(url_for('admin.inventory_requests'))
 
-    db.session.commit()
+    try:
+        # Update request status
+        inventory_request.status = 'rejected'
+        inventory_request.updated_at = datetime.utcnow()
 
-    flash('Inventory request rejected!', 'warning')
+        db.session.commit()
+
+        flash('Inventory request rejected!', 'warning')
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Error rejecting request: {str(e)}', 'danger')
+    
     return redirect(url_for('admin.inventory_requests'))
 
 

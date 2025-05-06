@@ -414,7 +414,10 @@ def request_inventory():
             db.session.add(inventory_request)
             db.session.commit()
             
+            # Update pending_requests_count in admin dashboard
+            pending_requests_count = InventoryRequest.query.filter_by(status='pending').count()
             print(f"Created inventory request: {inventory_request.id}, {inventory_request.item_name}, User: {inventory_request.user_id}, Center: {inventory_request.center_id}")
+            print(f"Current pending requests: {pending_requests_count}")
             
             flash('Inventory request submitted successfully! It will be reviewed by an admin.', 'success')
             return redirect(url_for('teacher.inventory'))

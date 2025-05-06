@@ -1,3 +1,4 @@
+
 {% extends 'base.html' %}
 
 {% block title %}Aaganshiksha - Inventory Requests{% endblock %}
@@ -32,13 +33,26 @@
                     </thead>
                     <tbody>
                         {% if inventory_requests %}
-                            {% for request in inventory_requests %}
+                            {% for item in inventory_requests %}
+                                {% set request = item[0] if item is iterable and item|length > 1 else item %}
                                 <tr>
                                     <td>{{ request.item_name }}</td>
-                                    <td>{{ request.quantity }} {{ request.unit }}</td>
+                                    <td>{{ request.quantity }}</td>
                                     <td>{{ request.unit }}</td>
-                                    <td>{{ request.center.name }}</td>
-                                    <td>{{ request.requester.username if request.requester else 'Unknown' }}</td>
+                                    <td>
+                                        {% if item is iterable and item|length > 1 %}
+                                            {{ item.center_name }}
+                                        {% else %}
+                                            {{ request.center.name if request.center else 'Unknown' }}
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if item is iterable and item|length > 1 %}
+                                            {{ item.requester_name }}
+                                        {% else %}
+                                            {{ request.requester.username if request.requester else 'Unknown' }}
+                                        {% endif %}
+                                    </td>
                                     <td>{{ request.created_at.strftime('%Y-%m-%d') }}</td>
                                     <td>
                                         <span class="badge {% if request.status == 'pending' %}bg-warning{% elif request.status == 'approved' %}bg-success{% else %}bg-danger{% endif %}">
