@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Aaganshiksha{% endblock %}</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap CSS with light theme -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Animate CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg fixed-top shadow-sm navbar-light" style="background-color: #FFFCF2;">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="{{ url_for('home.index') }}">
+                <i class="fas fa-child" style="color: #FF9933; background: transparent;"></i>
+                <span style="color: #FF9933;">Aagan</span><span style="color: #FFD700;">shiksha</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item mx-1">
+                        <a class="nav-link rounded px-3 {% if request.path == '/' %}active{% endif %}" href="{{ url_for('home.index') }}">
+                            <i class="fas fa-home me-1"></i> Home
+                        </a>
+                    </li>
+                    <li class="nav-item mx-1">
+                        <a class="nav-link rounded px-3 {% if request.path == '/about' %}active{% endif %}" href="{{ url_for('home.about') }}">
+                            <i class="fas fa-info-circle me-1"></i> About Us
+                        </a>
+                    </li>
+
+                    {% if current_user.is_authenticated %}
+                        {% if current_user.role == 'admin' %}
+                            <li class="nav-item mx-1">
+                                <a class="nav-link rounded px-3 {% if '/admin/' in request.path and not '/admin/search' in request.path %}active{% endif %}" href="{{ url_for('admin.dashboard') }}">
+                                    <i class="fas fa-tachometer-alt me-1"></i> Dashboard
+                                </a>
+                            </li>
+                            <li class="nav-item mx-1">
+                                <a class="nav-link rounded px-3 {% if '/admin/search' in request.path %}active{% endif %}" href="{{ url_for('admin.search') }}">
+                                    <i class="fas fa-search me-1"></i> Search
+                                </a>
+                            </li>
+                        {% elif current_user.role == 'teacher' %}
+                            <li class="nav-item mx-1">
+                                <a class="nav-link rounded px-3 {% if '/teacher/' in request.path %}active{% endif %}" href="{{ url_for('teacher.dashboard') }}">
+                                    <i class="fas fa-chalkboard-teacher me-1"></i> Dashboard
+                                </a>
+                            </li>
+                        {% endif %}
+                        <li class="nav-item mx-1">
+                            <a class="nav-link rounded px-3 {% if '/attendance/' in request.path %}active{% endif %}" href="{{ url_for('attendance.index') }}">
+                                <i class="fas fa-clipboard-check me-1"></i> Attendance
+                            </a>
+                        </li>
+                        {% if current_user.role == 'teacher' %}
+                        <li class="nav-item mx-1">
+                            <a class="nav-link rounded px-3 {% if '/teacher/search' in request.path %}active{% endif %}" href="{{ url_for('teacher.search') }}">
+                                <i class="fas fa-search me-1"></i> Search
+                            </a>
+                        </li>
+                        {% endif %}
+                        <li class="nav-item mx-1">
+                            <a class="nav-link rounded-pill btn btn-soft-danger px-3" href="{{ url_for('auth.logout') }}">
+                                <i class="fas fa-sign-out-alt me-1"></i> Logout
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item mx-1">
+                            <a class="nav-link rounded-pill btn btn-soft-primary px-3 {% if '/auth/login' in request.path %}active{% endif %}" href="{{ url_for('auth.login') }}">
+                                <i class="fas fa-sign-in-alt me-1"></i> Login
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Spacer for fixed navbar -->
+    <div style="height: 76px;"></div>
+
+    <!-- Flash Messages -->
+    <div class="container mt-3">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show shadow-sm rounded-3 animate__animated animate__fadeIn" role="alert">
+                        <i class="fas fa-info-circle me-2"></i> {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- Main Content -->
+    <main class="py-4">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer style="background-color: #FFF9E6;" class="py-5 mt-5 border-top">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6">
+                    <div class="mb-4">
+                        <h5 class="fw-bold mb-4">
+                            <i class="fas fa-child" style="color: #FF9933;"></i>
+                            <span style="color: #FF9933;">Aagan</span><span style="color: #FFD700;">shiksha</span>
+                        </h5>
+                        <p class="text-muted">A digital platform for Aganwadi centers connecting students, parents, teachers, and administrators for better early childhood education.</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="mb-4">
+                        <h5 class="fw-bold text-dark mb-4">Quick Links</h5>
+                        <ul class="list-unstyled">
+                            <li class="mb-2"><a href="{{ url_for('home.index') }}" class="text-decoration-none text-muted"><i class="fas fa-angle-right me-2"></i>Home</a></li>
+                            <li class="mb-2"><a href="{{ url_for('home.about') }}" class="text-decoration-none text-muted"><i class="fas fa-angle-right me-2"></i>About Us</a></li>
+                            {% if current_user.is_authenticated %}
+                                <li class="mb-2"><a href="{{ url_for('auth.logout') }}" class="text-decoration-none text-muted"><i class="fas fa-angle-right me-2"></i>Logout</a></li>
+                            {% else %}
+                                <li class="mb-2"><a href="{{ url_for('auth.login') }}" class="text-decoration-none text-muted"><i class="fas fa-angle-right me-2"></i>Login</a></li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-5 col-md-6">
+                    <div class="mb-4">
+                        <h5 class="fw-bold text-dark mb-4">Contact Us</h5>
+                        <div class="text-muted">
+                            <p class="mb-2"><i class="fas fa-map-marker-alt text-primary me-2"></i>123 Aganwadi Road, City</p>
+                            <p class="mb-2"><i class="fas fa-phone text-primary me-2"></i>+91 1234567890</p>
+                            <p class="mb-2"><i class="fas fa-envelope text-primary me-2"></i>info@aaganshiksha.org</p>
+                        </div>
+                        <div class="social-icons mt-3">
+                            <a href="#" class="text-decoration-none me-2"><i class="fab fa-facebook-f p-2 rounded bg-soft-primary text-primary"></i></a>
+                            <a href="#" class="text-decoration-none me-2"><i class="fab fa-twitter p-2 rounded bg-soft-info text-info"></i></a>
+                            <a href="#" class="text-decoration-none me-2"><i class="fab fa-instagram p-2 rounded bg-soft-danger text-danger"></i></a>
+                            <a href="#" class="text-decoration-none"><i class="fab fa-youtube p-2 rounded bg-soft-danger text-danger"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <div class="text-center text-muted">
+                <p class="mb-0">&copy; {{ current_year|default(2025) }} Aaganshiksha. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Main JS -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,15 @@
+
+{% for tip in nutrition_tips.items %}
+<div class="col-md-4 mb-4">
+    <div class="card h-100 nutrition-card">
+        <div class="card-body">
+            <h5 class="card-title">{{ tip.title }}</h5>
+            <p class="card-text">{{ tip.content|truncate(150) }}</p>
+            <a href="{{ url_for('home.nutrition_tip_detail', id=tip.id) }}" class="btn btn-outline-warning">Read More</a>
+        </div>
+        <div class="card-footer text-muted">
+            Posted on {{ tip.created_at.strftime('%B %d, %Y') }}
+        </div>
+    </div>
+</div>
+{% endfor %}

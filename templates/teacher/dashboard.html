@@ -1,0 +1,328 @@
+{% extends 'base.html' %}
+
+{% block title %}Aaganshiksha - Teacher Dashboard{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.css">
+<style>
+    .search-container {
+        position: relative;
+    }
+
+    .search-input {
+        padding-right: 30px; /* Space for the dropdown arrow */
+    }
+
+    #searchSuggestions {
+        position: absolute;
+        background-color: white;
+        border: 1px solid #ccc;
+        border-top: none;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        z-index: 10;
+        max-height: 200px;
+        overflow-y: auto;
+    }
+
+    #searchSuggestions ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    #searchSuggestions li {
+        padding: 8px 12px;
+        cursor: pointer;
+    }
+
+    #searchSuggestions li:hover {
+        background-color: #f0f0f0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0 text-gray-800">Teacher Dashboard</h1>
+                <div>
+                    <a href="{{ url_for('teacher.search') }}" class="btn btn-primary me-2">
+                        <i class="fas fa-search me-2"></i>Search
+                    </a>
+                    <a href="{{ url_for('auth.logout') }}" class="btn btn-danger">
+                        <i class="fas fa-sign-out-alt me-2"></i>Logout
+                    </a>
+                </div>
+            </div>
+            <p class="mb-0">Welcome, {{ current_user.username }}!</p>
+        </div>
+    </div>
+
+    <!-- Search bar has been removed -->
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Students</div>
+                            <div class="h5 mb-0 font-weight-bold">{{ students_count }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-child fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent border-0">
+                    <a href="{{ url_for('teacher.students') }}" class="btn btn-sm btn-primary w-100">
+                        Manage Students
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Attendance</div>
+                            <div class="h5 mb-0 font-weight-bold">Daily</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-clipboard-check fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent border-0">
+                    <a href="{{ url_for('teacher.attendance') }}" class="btn btn-sm btn-success w-100">
+                        Mark Attendance
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Inventory</div>
+                            <div class="h5 mb-0 font-weight-bold">{{ inventory_count }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-box fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent border-0">
+                    <a href="{{ url_for('teacher.inventory') }}" class="btn btn-sm btn-info w-100">
+                        Manage Inventory
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Centers</div>
+                            <div class="h5 mb-0 font-weight-bold">{{ centers_count }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-school fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent border-0">
+                    <a href="{{ url_for('attendance.index') }}" class="btn btn-sm btn-warning w-100">
+                        View Report
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content Row -->
+    <div class="row">
+        <!-- Content Management -->
+        <div class="col-xl-6 col-md-12 mb-4">
+            <div class="card h-100">
+                <div class="card-header" style="background-color: #FF9933; color: white;">
+                    <h5 class="mb-0">Manage Content</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        <i class="fas fa-apple-alt me-2"></i> Nutrition Tips
+                                    </h5>
+                                    <p class="card-text">Add and manage nutrition tips for parents and students.</p>
+                                    <a href="{{ url_for('teacher.nutrition') }}" class="btn btn-outline-primary btn-sm">Manage Tips</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        <i class="fas fa-calendar-alt me-2"></i> Activities
+                                    </h5>
+                                    <p class="card-text">Create and manage activities for Aganwadi centers.</p>
+                                    <a href="{{ url_for('teacher.activities') }}" class="btn btn-outline-primary btn-sm">Manage Activities</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="col-xl-6 col-md-12 mb-4">
+            <div class="card h-100">
+                <div class="card-header" style="background-color: #FFD700; color: #4D3900;">
+                    <h5 class="mb-0">Quick Access</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="d-grid">
+                                <a href="{{ url_for('teacher.attendance') }}" class="btn btn-outline-success">
+                                    <i class="fas fa-clipboard-check me-2"></i> Mark Today's Attendance
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="d-grid">
+                                <a href="{{ url_for('attendance.index') }}" class="btn btn-outline-success">
+                                    <i class="fas fa-chart-bar me-2"></i> Weekly Attendance Report
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="d-grid">
+                                <a href="{{ url_for('teacher.students') }}" class="btn btn-outline-success">
+                                    <i class="fas fa-user-plus me-2"></i> Add New Student
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="d-grid">
+                                <a href="{{ url_for('teacher.request_inventory') }}" class="btn btn-outline-success">
+                                    <i class="fas fa-box-open me-2"></i> Request Inventory Items
+                                </a>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content Row -->
+    <div class="row">
+        <!-- Recent Activities -->
+        <div class="col-xl-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">Recent Activities</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for activity in recent_activities %}
+                                    <tr>
+                                        <td>{{ activity.title }}</td>
+                                        <td>{{ activity.date.strftime('%Y-%m-%d') }}</td>
+                                        <td>
+                                            {% if activity.is_active %}
+                                                <span class="badge bg-success">Active</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">Inactive</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="text-center mt-3">
+                        <a href="{{ url_for('teacher.activities') }}" class="btn btn-sm btn-outline-info">View All Activities</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Nutrition Tips -->
+        <div class="col-xl-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Recent Nutrition Tips</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Created At</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for tip in recent_tips %}
+                                    <tr>
+                                        <td>{{ tip.title }}</td>
+                                        <td>{{ tip.created_at.strftime('%Y-%m-%d') }}</td>
+                                        <td>
+                                            {% if tip.is_active %}
+                                                <span class="badge bg-success">Active</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">Inactive</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="text-center mt-3">
+                        <a href="{{ url_for('teacher.nutrition') }}" class="btn btn-sm btn-outline-primary">View All Nutrition Tips</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
+<script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+
+<script>
+    // Search functionality has been removed
+</script>
+{% endblock %}

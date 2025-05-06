@@ -1,0 +1,210 @@
+
+{% extends 'base.html' %}
+
+{% block title %}Aaganshiksha - User Details{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">User Profile</h1>
+        <div>
+            <a href="{{ url_for('admin.search') }}" class="btn btn-secondary me-2">
+                <i class="fas fa-search me-2"></i>Back to Search
+            </a>
+            <a href="{{ url_for('admin.dashboard') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- User Information Column -->
+        <div class="col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Personal Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <div class="mb-3">
+                            <i class="fas fa-user-circle fa-6x text-primary"></i>
+                        </div>
+                        <h4>{{ user.username }}</h4>
+                        <span class="badge bg-{{ 'danger' if user.role == 'admin' else 'success' }}">
+                            {{ user.role|capitalize }}
+                        </span>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="mb-3">
+                        <label class="text-muted d-block">Email:</label>
+                        <div class="fw-bold">{{ user.email }}</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="text-muted d-block">Aadhar Number:</label>
+                        <div class="fw-bold">{{ "XXXX-XXXX-" + user.aadhar_number[-4:] }}</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="text-muted d-block">Created On:</label>
+                        <div class="fw-bold">{{ user.created_at.strftime('%d %B, %Y') }}</div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 mt-4">
+                        <a href="{{ url_for('admin.edit_user', id=user.id) }}" class="btn btn-outline-primary">
+                            <i class="fas fa-edit me-2"></i>Edit User
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Center and Activity Column -->
+        <div class="col-lg-8">
+            <!-- Center Information -->
+            {% if user.role == 'teacher' %}
+                <div class="card mb-4">
+                    <div class="card-header bg-secondary text-white">
+                        <h5 class="mb-0">Center Assignment</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if center %}
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="text-muted d-block">Center Name:</label>
+                                        <div class="fw-bold">{{ center.name }}</div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="text-muted d-block">Contact Number:</label>
+                                        <div class="fw-bold">{{ center.contact_number or 'N/A' }}</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="text-muted d-block">Address:</label>
+                                        <div class="fw-bold">{{ center.address }}</div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="text-muted d-block">Email:</label>
+                                        <div class="fw-bold">{{ center.email or 'N/A' }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <a href="{{ url_for('admin.edit_center', id=center.id) }}" class="btn btn-sm btn-outline-secondary">
+                                <i class="fas fa-edit me-2"></i>Edit Center
+                            </a>
+                        {% else %}
+                            <div class="alert alert-warning">
+                                <i class="fas fa-exclamation-circle me-2"></i>
+                                This teacher has not been assigned to any center.
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+            
+            <!-- Attendance Records (for teachers) -->
+            {% if user.role == 'teacher' %}
+                <div class="card mb-4">
+                    <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Attendance Records Marked</h5>
+                        <span class="badge bg-light text-dark">{{ attendance_records|length }} Records</span>
+                    </div>
+                    <div class="card-body">
+                        {% if attendance_records %}
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Student</th>
+                                            <th>Status</th>
+                                            <th>Remarks</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for record in attendance_records %}
+                                            <tr>
+                                                <td>{{ record.date.strftime('%d %b, %Y') }}</td>
+                                                <td>
+                                                    <a href="{{ url_for('admin.search_student_details', id=record.student_id) }}">
+                                                        {{ record.student.name }}
+                                                    </a>
+                                                </td>
+                                                <td>
+                                                    <span class="badge bg-{{ 'success' if record.status == 'present' else 'danger' if record.status == 'absent' else 'warning' }}">
+                                                        {{ record.status|capitalize }}
+                                                    </span>
+                                                </td>
+                                                <td>{{ record.remarks or 'N/A' }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>
+                                No attendance records have been marked by this teacher yet.
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+            
+            <!-- Activities Created (if any) -->
+            {% if user.activities %}
+                <div class="card mb-4">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">Activities Created</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="list-group">
+                            {% for activity in user.activities %}
+                                <div class="list-group-item">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h5 class="mb-1">{{ activity.title }}</h5>
+                                        <small>{{ activity.date.strftime('%d %b, %Y') }}</small>
+                                    </div>
+                                    <p class="mb-1">{{ activity.description|truncate(150) }}</p>
+                                    <small class="text-{{ 'success' if activity.is_active else 'danger' }}">
+                                        {{ 'Active' if activity.is_active else 'Inactive' }}
+                                    </small>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+            
+            <!-- Nutrition Tips Created (if any) -->
+            {% if user.nutrition_tips %}
+                <div class="card mb-4">
+                    <div class="card-header bg-warning text-dark">
+                        <h5 class="mb-0">Nutrition Tips Created</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="list-group">
+                            {% for tip in user.nutrition_tips %}
+                                <div class="list-group-item">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h5 class="mb-1">{{ tip.title }}</h5>
+                                        <small>{{ tip.created_at.strftime('%d %b, %Y') }}</small>
+                                    </div>
+                                    <p class="mb-1">{{ tip.content|truncate(150) }}</p>
+                                    <small class="text-{{ 'success' if tip.is_active else 'danger' }}">
+                                        {{ 'Active' if tip.is_active else 'Inactive' }}
+                                    </small>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

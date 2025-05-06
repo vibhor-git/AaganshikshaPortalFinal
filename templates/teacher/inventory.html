@@ -1,0 +1,191 @@
+{% extends 'base.html' %}
+
+{% block title %}Aaganshiksha - Teacher Inventory Management{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">Inventory Management</h1>
+        <a href="{{ url_for('teacher.dashboard') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+        </a>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">
+                {% if is_add %}
+                    Add New Inventory Item
+                {% elif is_edit %}
+                    Edit Inventory Item
+                {% else %}
+                    Inventory Items
+                {% endif %}
+            </h5>
+        </div>
+        <div class="card-body">
+            {% if is_add or is_edit %}
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Item Name</label>
+                            {{ form.item_name(class="form-control") }}
+                            {% if form.item_name.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.item_name.errors %}
+                                        <small>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Quantity</label>
+                            {{ form.quantity(class="form-control") }}
+                            {% if form.quantity.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.quantity.errors %}
+                                        <small>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Unit</label>
+                            {{ form.unit(class="form-control") }}
+                            {% if form.unit.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.unit.errors %}
+                                        <small>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Description</label>
+                        {{ form.description(class="form-control", rows=3) }}
+                        {% if form.description.errors %}
+                            <div class="text-danger">
+                                {% for error in form.description.errors %}
+                                    <small>{{ error }}</small>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Center</label>
+                        {{ form.center_id(class="form-select") }}
+                        {% if form.center_id.errors %}
+                            <div class="text-danger">
+                                {% for error in form.center_id.errors %}
+                                    <small>{{ error }}</small>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('teacher.inventory') }}" class="btn btn-secondary">Cancel</a>
+                        {{ form.submit(class="btn btn-primary") }}
+                    </div>
+                </form>
+            {% else %}
+                <div class="d-flex justify-content-between mb-3">
+                    <a href="{{ url_for('teacher.request_inventory') }}" class="btn btn-info">
+                        <i class="fas fa-clipboard-list me-2"></i>Request New Items
+                    </a>
+                    <a href="{{ url_for('teacher.add_inventory') }}" class="btn btn-success">
+                        <i class="fas fa-plus me-2"></i>Add New Item
+                    </a>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Item Name</th>
+                                <th>Quantity</th>
+                                <th>Unit</th>
+                                <th>Center</th>
+                                <th>Description</th>
+                                <th>Last Updated</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if inventory_items %}
+                                {% for item in inventory_items %}
+                                    <tr>
+                                        <td>{{ item.item_name }}</td>
+                                        <td>{{ item.quantity }}</td>
+                                        <td>{{ item.unit }}</td>
+                                        <td>{{ item.center.name }}</td>
+                                        <td>{{ item.description }}</td>
+                                        <td>{{ item.updated_at.strftime('%Y-%m-%d') }}</td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                <a href="{{ url_for('teacher.edit_inventory', id=item.id) }}" class="btn btn-warning">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="7" class="text-center">No inventory items found.</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Inventory Request Form -->
+    <div class="card">
+        <div class="card-header bg-info text-white">
+            <h5 class="mb-0">Request New Inventory Items</h5>
+        </div>
+        <div class="card-body">
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i>
+                Fill out this form to request additional inventory items for your center. The admin will review your request.
+            </div>
+            
+            <form>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Item Name</label>
+                        <input type="text" class="form-control" placeholder="Enter item name">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Quantity</label>
+                        <input type="number" class="form-control" placeholder="Enter quantity">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Unit</label>
+                        <input type="text" class="form-control" placeholder="e.g., kg, pieces, etc.">
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Reason for Request</label>
+                    <textarea class="form-control" rows="3" placeholder="Explain why these items are needed"></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Priority</label>
+                    <select class="form-select">
+                        <option value="low">Low</option>
+                        <option value="medium">Medium</option>
+                        <option value="high">High</option>
+                        <option value="urgent">Urgent</option>
+                    </select>
+                </div>
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-info">Submit Request</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

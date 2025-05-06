@@ -1,0 +1,190 @@
+{% extends 'base.html' %}
+
+{% block title %}Aaganshiksha - Teacher Activities{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">Activities Management</h1>
+        <a href="{{ url_for('teacher.dashboard') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+        </a>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">
+                {% if is_add %}
+                    Add New Activity
+                {% elif is_edit %}
+                    Edit Activity
+                {% else %}
+                    Activities
+                {% endif %}
+            </h5>
+        </div>
+        <div class="card-body">
+            {% if is_add or is_edit %}
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+                    <div class="mb-3">
+                        <label class="form-label">Title</label>
+                        {{ form.title(class="form-control") }}
+                        {% if form.title.errors %}
+                            <div class="text-danger">
+                                {% for error in form.title.errors %}
+                                    <small>{{ error }}</small>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Description</label>
+                        {{ form.description(class="form-control", rows=5) }}
+                        {% if form.description.errors %}
+                            <div class="text-danger">
+                                {% for error in form.description.errors %}
+                                    <small>{{ error }}</small>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Date</label>
+                        {{ form.date(class="form-control", type="date") }}
+                        {% if form.date.errors %}
+                            <div class="text-danger">
+                                {% for error in form.date.errors %}
+                                    <small>{{ error }}</small>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="mb-3 form-check">
+                        {{ form.is_active(class="form-check-input") }}
+                        <label class="form-check-label" for="is_active">Active</label>
+                        {% if form.is_active.errors %}
+                            <div class="text-danger">
+                                {% for error in form.is_active.errors %}
+                                    <small>{{ error }}</small>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('teacher.activities') }}" class="btn btn-secondary">Cancel</a>
+                        {{ form.submit(class="btn btn-primary") }}
+                    </div>
+                </form>
+            {% else %}
+                <div class="d-flex justify-content-end mb-3">
+                    <a href="{{ url_for('teacher.add_activity') }}" class="btn btn-success">
+                        <i class="fas fa-plus me-2"></i>Add New Activity
+                    </a>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Description</th>
+                                <th>Date</th>
+                                <th>Created By</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if activities %}
+                                {% for activity in activities %}
+                                    <tr>
+                                        <td>{{ activity.title }}</td>
+                                        <td>{{ activity.description|truncate(50) }}</td>
+                                        <td>{{ activity.date.strftime('%Y-%m-%d') }}</td>
+                                        <td>{{ activity.created_by.username }}</td>
+                                        <td>
+                                            <span class="badge {% if activity.is_active %}bg-success{% else %}bg-secondary{% endif %}">
+                                                {{ 'Active' if activity.is_active else 'Inactive' }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                {% if activity.user_id == current_user.id %}
+                                                    <a href="{{ url_for('teacher.edit_activity', id=activity.id) }}" class="btn btn-warning">
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
+                                                {% else %}
+                                                    <button type="button" class="btn btn-secondary" disabled>
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
+                                                {% endif %}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="6" class="text-center">No activities found.</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Activity Ideas -->
+    <div class="card">
+        <div class="card-header bg-info text-white">
+            <h5 class="mb-0">Activity Ideas for Aganwadi Children</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">Cognitive Development</h5>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item">Storytelling sessions</li>
+                                <li class="list-group-item">Puzzle solving</li>
+                                <li class="list-group-item">Counting games</li>
+                                <li class="list-group-item">Memory activities</li>
+                                <li class="list-group-item">Basic language exercises</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">Physical Development</h5>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item">Outdoor play sessions</li>
+                                <li class="list-group-item">Simple yoga for kids</li>
+                                <li class="list-group-item">Balance and coordination games</li>
+                                <li class="list-group-item">Ball games</li>
+                                <li class="list-group-item">Dancing and movement</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">Social Development</h5>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item">Group play sessions</li>
+                                <li class="list-group-item">Sharing exercises</li>
+                                <li class="list-group-item">Role-playing activities</li>
+                                <li class="list-group-item">Circle time discussions</li>
+                                <li class="list-group-item">Community helper visits</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

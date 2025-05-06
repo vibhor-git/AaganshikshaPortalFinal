@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block title %}Aaganshiksha - Request Inventory{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">Request Inventory Items</h1>
+        <a href="{{ url_for('teacher.inventory') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Back to Inventory
+        </a>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header bg-info text-white">
+            <h5 class="mb-0">New Inventory Request</h5>
+        </div>
+        <div class="card-body">
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i>
+                Fill out this form to request inventory items for your center. The request will be reviewed by an admin.
+            </div>
+
+            <form method="POST" action="{{ url_for('teacher.request_inventory') }}">
+                {{ form.csrf_token }}
+                {{ form.hidden_tag() }}
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Item Name</label>
+                        {{ form.item_name(class="form-control") }}
+                        {% if form.item_name.errors %}
+                            <div class="text-danger">
+                                {% for error in form.item_name.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Quantity</label>
+                        {{ form.quantity(class="form-control") }}
+                        {% if form.quantity.errors %}
+                            <div class="text-danger">
+                                {% for error in form.quantity.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Unit</label>
+                        {{ form.unit(class="form-control") }}
+                        {% if form.unit.errors %}
+                            <div class="text-danger">
+                                {% for error in form.unit.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Description</label>
+                    {{ form.description(class="form-control", rows=3) }}
+                    {% if form.description.errors %}
+                        <div class="text-danger">
+                            {% for error in form.description.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="d-flex justify-content-end">
+                    {{ form.submit(class="btn btn-primary") }}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

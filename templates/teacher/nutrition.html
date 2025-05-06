@@ -1,0 +1,160 @@
+{% extends 'base.html' %}
+
+{% block title %}Aaganshiksha - Teacher Nutrition Tips{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">Nutrition Tips Management</h1>
+        <a href="{{ url_for('teacher.dashboard') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+        </a>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">
+                {% if is_add %}
+                    Add New Nutrition Tip
+                {% elif is_edit %}
+                    Edit Nutrition Tip
+                {% else %}
+                    Nutrition Tips
+                {% endif %}
+            </h5>
+        </div>
+        <div class="card-body">
+            {% if is_add or is_edit %}
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+                    <div class="mb-3">
+                        <label class="form-label">Title</label>
+                        {{ form.title(class="form-control") }}
+                        {% if form.title.errors %}
+                            <div class="text-danger">
+                                {% for error in form.title.errors %}
+                                    <small>{{ error }}</small>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Content</label>
+                        {{ form.content(class="form-control", rows=5) }}
+                        {% if form.content.errors %}
+                            <div class="text-danger">
+                                {% for error in form.content.errors %}
+                                    <small>{{ error }}</small>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="mb-3 form-check">
+                        {{ form.is_active(class="form-check-input") }}
+                        <label class="form-check-label" for="is_active">Active</label>
+                        {% if form.is_active.errors %}
+                            <div class="text-danger">
+                                {% for error in form.is_active.errors %}
+                                    <small>{{ error }}</small>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('teacher.nutrition') }}" class="btn btn-secondary">Cancel</a>
+                        {{ form.submit(class="btn btn-primary") }}
+                    </div>
+                </form>
+            {% else %}
+                <div class="d-flex justify-content-end mb-3">
+                    <a href="{{ url_for('teacher.add_nutrition') }}" class="btn btn-success">
+                        <i class="fas fa-plus me-2"></i>Add New Nutrition Tip
+                    </a>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Content</th>
+                                <th>Created By</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if nutrition_tips %}
+                                {% for tip in nutrition_tips %}
+                                    <tr>
+                                        <td>{{ tip.title }}</td>
+                                        <td>{{ tip.content|truncate(50) }}</td>
+                                        <td>{{ tip.created_by.username }}</td>
+                                        <td>{{ tip.created_at.strftime('%Y-%m-%d') }}</td>
+                                        <td>
+                                            <span class="badge {% if tip.is_active %}bg-success{% else %}bg-secondary{% endif %}">
+                                                {{ 'Active' if tip.is_active else 'Inactive' }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                {% if tip.user_id == current_user.id %}
+                                                    <a href="{{ url_for('teacher.edit_nutrition', id=tip.id) }}" class="btn btn-warning">
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
+                                                {% else %}
+                                                    <button type="button" class="btn btn-secondary" disabled>
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
+                                                {% endif %}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="6" class="text-center">No nutrition tips found.</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Nutrition Guidelines -->
+    <div class="card">
+        <div class="card-header bg-info text-white">
+            <h5 class="mb-0">Nutrition Guidelines for Aganwadi Children</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Tips for Creating Effective Nutrition Content</h5>
+                    <ul>
+                        <li>Keep the information simple and easy to understand</li>
+                        <li>Use local food examples that are familiar to families</li>
+                        <li>Focus on affordable and accessible food options</li>
+                        <li>Highlight the importance of balanced meals</li>
+                        <li>Provide practical tips that parents can implement daily</li>
+                        <li>Include information about proper food handling and safety</li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <h5>Key Nutrition Topics to Cover</h5>
+                    <ul>
+                        <li>Importance of protein for growth and development</li>
+                        <li>Essential vitamins and minerals for children</li>
+                        <li>Healthy eating habits and meal routines</li>
+                        <li>Hydration and the importance of clean water</li>
+                        <li>Managing food allergies and intolerances</li>
+                        <li>Affordable nutritious meal ideas</li>
+                        <li>Limiting processed foods and sugary snacks</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

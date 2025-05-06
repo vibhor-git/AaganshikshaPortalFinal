@@ -1,0 +1,208 @@
+{% extends 'base.html' %}
+
+{% block title %}Aaganshiksha - Attendance Overview{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">Attendance Overview</h1>
+        {% if current_user.role == 'admin' %}
+            <a href="{{ url_for('admin.dashboard') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+            </a>
+        {% else %}
+            <a href="{{ url_for('teacher.dashboard') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+            </a>
+        {% endif %}
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header" style="background-color: #FF9933; color: white;">
+                    <h5 class="mb-0">Mark Attendance</h5>
+                </div>
+                <div class="card-body">
+                    <form method="GET" action="{{ url_for('teacher.attendance') }}">
+                        <div class="row align-items-end">
+                            <div class="col-md-8">
+                                <label class="form-label">Select Date</label>
+                                {{ form.date(class="form-control", type="date") }}
+                            </div>
+                            <div class="col-md-4">
+                                <div class="d-grid">
+                                    <button type="submit" class="btn btn-primary">Go to Mark Attendance</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">Weekly Attendance Summary</h5>
+                </div>
+                <div class="card-body">
+                    <p>Showing attendance from <strong>{{ start_date }}</strong> to <strong>{{ end_date }}</strong></p>
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('attendance.index', week_offset=prev_week_offset) }}" class="btn btn-sm btn-outline-info">
+                            <i class="fas fa-chevron-left"></i> Previous Week
+                        </a>
+                        {% if week_offset != 0 %}
+                        <a href="{{ url_for('attendance.index', week_offset=0) }}" class="btn btn-sm btn-outline-primary">
+                            Current Week
+                        </a>
+                        {% endif %}
+                        <a href="{{ url_for('attendance.index', week_offset=next_week_offset) }}" class="btn btn-sm btn-outline-info">
+                            Next Week <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% for data in center_data %}
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">{{ data.center.name }} - Attendance Report</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr class="bg-light">
+                                <th>Day</th>
+                                <th>Date</th>
+                                <th>Present</th>
+                                <th>Absent</th>
+                                <th>Attendance %</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for day in data.days %}
+                                <tr>
+                                    <td>{{ day.day }}</td>
+                                    <td>{{ day.date }}</td>
+                                    <td>{{ day.present }}</td>
+                                    <td>{{ day.absent }}</td>
+                                    <td>
+                                        <div class="progress">
+                                            <div class="progress-bar bg-success" role="progressbar" style="width: {{ day.percentage }}%" aria-valuenow="{{ day.percentage }}" aria-valuemin="0" aria-valuemax="100">{{ day.percentage }}%</div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <a href="{{ url_for('attendance.view_attendance', center_id=data.center.id, date=day.date) }}" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye me-1"></i>View
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot>
+                            <tr class="bg-light">
+                                <th colspan="2">Total Students: {{ data.total_students }}</th>
+                                <th colspan="4">Overall Weekly Attendance Stats</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Attendance Analytics</h5>
+        </div>
+        <div class="card-body">
+            <canvas id="attendanceChart" height="250"></canvas>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Sample data for chart - this would ideally come from your backend
+        const ctx = document.getElementById('attendanceChart').getContext('2d');
+
+        // Extract data from server-rendered content
+        const centerData = [];
+        const labels = [];
+
+        {% for data in center_data %}
+            const presentData = [
+                {% for day in data.days %}
+                    {{ day.percentage }},
+                {% endfor %}
+            ];
+
+            centerData.push({
+                label: "{{ data.center.name }}",
+                data: presentData,
+                fill: false,
+                borderColor: getRandomColor(),
+                tension: 0.1
+            });
+
+            {% if loop.first %}
+                {% for day in data.days %}
+                    labels.push("{{ day.day }} ({{ day.date }})");
+                {% endfor %}
+            {% endif %}
+        {% endfor %}
+
+        // Create chart
+        const attendanceChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: centerData
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        title: {
+                            display: true,
+                            text: 'Attendance Percentage (%)'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Day of Week'
+                        }
+                    }
+                },
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Weekly Attendance Trends by Center'
+                    },
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+
+        function getRandomColor() {
+            const letters = '0123456789ABCDEF';
+            let color = '#';
+            for (let i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+    });
+</script>
+{% endblock %}

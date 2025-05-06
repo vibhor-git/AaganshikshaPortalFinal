@@ -1,0 +1,156 @@
+
+{% extends 'base.html' %}
+
+{% block title %}Aaganshiksha - Admin Search{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">Search</h1>
+        <a href="{{ url_for('admin.dashboard') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+        </a>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Search Users and Students</h5>
+        </div>
+        <div class="card-body">
+            <form id="searchForm">
+                <div class="input-group mb-3">
+                    <input type="text" id="searchInput" class="form-control" placeholder="Search by name, ID, contact, email or Aadhar (min. 3 characters)" minlength="3" value="{{ query }}" autocomplete="off">
+                    <button class="btn btn-primary" type="submit">
+                        <i class="fas fa-search"></i> Search
+                    </button>
+                </div>
+                <small class="text-muted">Search for students, teachers, or admins by name, Aadhar number, or contact details.</small>
+            </form>
+
+            {% if query and query|length >= 3 %}
+                <div class="mt-4">
+                    <h5>Search Results for "{{ query }}"</h5>
+                    
+                    {% if results and (results.students or results.users) %}
+                        <!-- Users Results -->
+                        {% if results.users %}
+                            <div class="card mb-4">
+                                <div class="card-header bg-secondary text-white">
+                                    <h6 class="mb-0">Teachers & Admins ({{ results.users|length }})</h6>
+                                </div>
+                                <div class="card-body p-0">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover mb-0">
+                                            <thead>
+                                                <tr>
+                                                    <th>Username</th>
+                                                    <th>Email</th>
+                                                    <th>Role</th>
+                                                    <th>Center</th>
+                                                    <th>Aadhar</th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for user in results.users %}
+                                                    <tr>
+                                                        <td>{{ user.username }}</td>
+                                                        <td>{{ user.email }}</td>
+                                                        <td>{{ user.role|capitalize }}</td>
+                                                        <td>
+                                                            {% if user.role == 'teacher' and user.center %}
+                                                                {{ user.center.name }}
+                                                            {% elif user.role == 'teacher' %}
+                                                                <span class="text-warning">Not assigned</span>
+                                                            {% else %}
+                                                                <span class="text-muted">N/A</span>
+                                                            {% endif %}
+                                                        </td>
+                                                        <td>{{ "XXXX-XXXX-" + user.aadhar_number[-4:] }}</td>
+                                                        <td>
+                                                            <a href="{{ url_for('admin.search_user_details', id=user.id) }}" class="btn btn-sm btn-info">
+                                                                <i class="fas fa-eye"></i> View Details
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                        
+                        <!-- Students Results -->
+                        {% if results.students %}
+                            <div class="card mb-4">
+                                <div class="card-header bg-info text-white">
+                                    <h6 class="mb-0">Students ({{ results.students|length }})</h6>
+                                </div>
+                                <div class="card-body p-0">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover mb-0">
+                                            <thead>
+                                                <tr>
+                                                    <th>Name</th>
+                                                    <th>Age</th>
+                                                    <th>Gender</th>
+                                                    <th>Parent Contact</th>
+                                                    <th>Center</th>
+                                                    <th>Aadhar</th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for student in results.students %}
+                                                    <tr>
+                                                        <td>{{ student.name }}</td>
+                                                        <td>{{ student.age }}</td>
+                                                        <td>{{ student.gender|capitalize }}</td>
+                                                        <td>{{ student.parent_contact }}</td>
+                                                        <td>{{ student.center.name }}</td>
+                                                        <td>{{ "XXXX-XXXX-" + student.aadhar_number[-4:] }}</td>
+                                                        <td>
+                                                            <a href="{{ url_for('admin.search_student_details', id=student.id) }}" class="btn btn-sm btn-info">
+                                                                <i class="fas fa-eye"></i> View Details
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-circle me-2"></i>
+                            No results found for "{{ query }}". Try a different search term.
+                        </div>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchForm = document.getElementById('searchForm');
+        const searchInput = document.getElementById('searchInput');
+        
+        searchForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            if (searchInput.value.length >= 3) {
+                window.location.href = "{{ url_for('admin.search') }}?query=" + encodeURIComponent(searchInput.value);
+            } else {
+                searchInput.classList.add('is-invalid');
+                setTimeout(() => {
+                    searchInput.classList.remove('is-invalid');
+                }, 3000);
+            }
+        });
+    });
+</script>
+{% endblock %}

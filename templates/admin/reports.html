@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+
+{% block title %}Aaganshiksha - Admin Reports{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">Generate Reports</h1>
+        <a href="{{ url_for('admin.dashboard') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Report Parameters</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('admin.reports') }}">
+                        {{ form.hidden_tag() }}
+                        <div class="mb-3">
+                            <label class="form-label">Report Type</label>
+                            {{ form.report_type(class="form-select") }}
+                            {% if form.report_type.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.report_type.errors %}
+                                        <small>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Center</label>
+                            {{ form.center_id(class="form-select") }}
+                            {% if form.center_id.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.center_id.errors %}
+                                        <small>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Start Date (Optional)</label>
+                            {{ form.start_date(class="form-control", type="date") }}
+                            {% if form.start_date.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.start_date.errors %}
+                                        <small>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">End Date (Optional)</label>
+                            {{ form.end_date(class="form-control", type="date") }}
+                            {% if form.end_date.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.end_date.errors %}
+                                        <small>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="d-grid">
+                            {{ form.submit(class="btn btn-primary") }}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <div class="card mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">Report Information</h5>
+                </div>
+                <div class="card-body">
+                    <h5>Available Report Types</h5>
+                    <div class="accordion" id="reportAccordion">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingOne">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                    Attendance Report
+                                </button>
+                            </h2>
+                            <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#reportAccordion">
+                                <div class="accordion-body">
+                                    <p>This report provides attendance data for students across selected centers for the specified date range.</p>
+                                    <p><strong>Includes:</strong> Student name, center, date, attendance status, and who marked attendance.</p>
+                                    <p><strong>Format:</strong> CSV file download</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingTwo">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                    Students Report
+                                </button>
+                            </h2>
+                            <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#reportAccordion">
+                                <div class="accordion-body">
+                                    <p>This report provides comprehensive information about students enrolled in the selected centers.</p>
+                                    <p><strong>Includes:</strong> Student name, age, gender, parent information, address, enrollment date, and center.</p>
+                                    <p><strong>Format:</strong> PDF file download</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingThree">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                    Inventory Report
+                                </button>
+                            </h2>
+                            <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#reportAccordion">
+                                <div class="accordion-body">
+                                    <p>This report provides details of inventory items available across selected centers.</p>
+                                    <p><strong>Includes:</strong> Item name, quantity, unit, description, and center.</p>
+                                    <p><strong>Format:</strong> CSV file download</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingFour">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                                    Activities Report
+                                </button>
+                            </h2>
+                            <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#reportAccordion">
+                                <div class="accordion-body">
+                                    <p>This report provides information about activities scheduled for the specified date range.</p>
+                                    <p><strong>Includes:</strong> Activity title, description, date, status, and who created it.</p>
+                                    <p><strong>Format:</strong> CSV file download</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <h5>Tips for Generating Reports</h5>
+                        <ul>
+                            <li>Select "All Centers" to generate reports across all centers.</li>
+                            <li>Date filters are optional for Students and Inventory reports.</li>
+                            <li>For better performance, consider limiting date ranges for large data sets.</li>
+                            <li>Reports can be viewed in Microsoft Excel, Google Sheets, or any standard spreadsheet application.</li>
+                            <li>PDF reports require a PDF viewer such as Adobe Reader.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

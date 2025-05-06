@@ -1,0 +1,171 @@
+Project Title:
+Aaganshiksha
+
+Project Overview:
+Aaganshiksha website ka maqsad Aganwadi centres se jude students ke parents, teachers aur admin ke liye ek centralized digital platform provide karna hai. Is website mein home page ke alawa do dashboards (Admin aur Teacher) aur ek Attendance page honge. Website ko attractive, user-friendly aur mobile responsive design ke sath develop kiya jayega.
+
+Functional Specifications:
+1. Home Page:
+Nav Bar:
+
+Top par fixed navigation bar, jismein logo aur main menu items honge.
+
+Carousel Section:
+
+Banner images/slider jismein Aganwadi centres aur activities se related images dikhengi.
+
+About Us Section:
+
+Aganwadi ke mission, vision, history aur objectives ke baare mein brief information.
+
+Nutrition Tip Section:
+
+Roz ke ya weekly nutrition tips, balanced diet info, aur health guidelines for students.
+
+Activity Section:
+
+Centre mein hone wali activities aur programs ki details (photos, descriptions, dates).
+
+Complain Section:
+
+Parent/teacher/student ke liye complain/register feedback form.
+
+Footer Section:
+
+Contact details, social media links, copyright info aur quick links.
+
+2. Admin Dashboard:
+Login Page:
+
+Secure login page jismein username/password authentication ho.
+
+Dashboard (post-login):
+
+Nav Bar:
+
+Dashboard navigation, admin related links.
+
+Generate Report Button:
+
+Button jo report generate karke download karne ka feature provide kare (data aggregated from various databases).
+
+Manage Inventory Button:
+
+CRUD (Create, Read, Update, Delete) operations perform karne ke liye interface (inventory database).
+
+Manage User Button:
+
+CRUD operations on user database (parents, teachers, admin).
+
+Manage Center Button:
+
+CRUD operations for Aganwadi centre database (centre details, location, facilities, etc.).
+
+Manage Nutrition Tip Button:
+
+CRUD interface to manage nutrition tips content (update new tips, delete purane tips, etc.).
+
+Manage Activity Button:
+
+CRUD operations for activities data (add new activities, update, delete).
+
+Back Button:
+
+Dashboard se bahar ya previous page par return karne ka option.
+
+Footer Section:
+
+Consistent footer design with essential links aur details.
+
+3. Teacher Dashboard:
+Login Page:
+
+Secure teacher-specific login authentication.
+
+Dashboard (post-login):
+
+Nav Bar:
+
+Teacher specific navigation options.
+
+Mark Attendance Button:
+
+Attendance database mein entries record karne ke liye module.
+
+Required Inventory Button:
+
+Inventory module jahan teacher inventory requests, add/update operations kar sake (CRUD on inventory).
+
+Add Nutrition Tip Button:
+
+Interface to add/update nutrition tips (CRUD operations on nutrition database; agar zarurat ho toh validate content).
+
+Add Activity Button:
+
+Interface to manage daily/weekly activities (CRUD operation on activity database).
+
+Student Management Button:
+
+CRUD operations for student details (attendance, profile updates, performance tracking).
+
+Back Button:
+
+Dashboard se previous page ya home page par vaapas jaane ka option.
+
+Footer Section:
+
+Same footer design as baaki pages for consistency.
+
+4. Attendance Page (Optional/Additional Module):
+Attendance Module:
+
+Global attendance overview jahan students ki daily attendance record view/update ki ja sakti hai.
+
+Option for both teachers and admin to access attendance reports.
+
+Design & Responsiveness:
+User Interface (UI) Design:
+
+Modern, clean, aur attractive design elements (consistent color schemes, typography, and spacing).
+
+High resolution images, icons and responsive CSS frameworks (jaise Bootstrap ya Material UI) ka istemal.
+
+Mobile Responsiveness:
+
+Layout ko responsive design karna zaruri hai jisse mobile, tablet aur desktop users smoothly interact kar sakein.
+
+Navigation, forms, carousal aur dashboard layouts ko mobile friendly banana (hamburger menu, collapsible sections, etc.).
+
+Technical Architecture & Tools:
+Frontend:
+
+HTML5, CSS3 (Sass/LESS optional), JavaScript (Frameworks such as React/Angular/Vue.js can be considered).
+
+Use of component libraries / frameworks for responsive design (Bootstrap, Tailwind CSS).
+
+Backend:
+
+Preferred language: PHP, Python (Django/Flask), Node.js (Express) – aap ke project ke requirements aur scalability ke hisaab se choose karein.
+
+Authentication management for Admin and Teacher dashboards.
+
+RESTful API endpoints for CRUD operations (inventory, users, centers, nutrition tips, activities, students, attendance).
+
+Database:
+
+Relational database management system (MySQL, PostgreSQL) for structured data storage.
+
+Separate tables for users, centres, inventory, nutrition tips, activities, attendance, students.
+
+Deployment:
+
+Server setup for live hosting (shared hosting, cloud hosting such as AWS, DigitalOcean, etc.).
+
+SSL certificate for secure data transmission.
+
+Additional Tools:
+
+Reporting engine for generating dynamic reports and download as PDF/CSV.
+
+Logging, error handling, and session management mechanisms.
+

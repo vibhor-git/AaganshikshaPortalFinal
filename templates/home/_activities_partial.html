@@ -1,0 +1,15 @@
+
+{% for activity in activities.items %}
+<div class="col-md-4 mb-4">
+    <div class="card h-100 activity-card">
+        <div class="card-body">
+            <h5 class="card-title">{{ activity.title }}</h5>
+            <p class="card-text">{{ activity.description|truncate(150) }}</p>
+            <a href="{{ url_for('home.activity_detail', id=activity.id) }}" class="btn btn-outline-warning">Learn More</a>
+        </div>
+        <div class="card-footer text-muted">
+            Scheduled for {{ activity.date.strftime('%B %d, %Y') }}
+        </div>
+    </div>
+</div>
+{% endfor %}
