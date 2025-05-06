@@ -550,7 +550,13 @@ def inventory_requests():
     for req in requests:
         print(f"Request: {req.id}, {req.item_name}, User: {req.user_id}, Status: {req.status}")
     
-    # No need for manual joins, just load the relationships automatically
+    # Get the associated users and centers for each request
+    for req in requests:
+        # Make sure we can access the user and center
+        user = User.query.get(req.user_id)
+        center = Center.query.get(req.center_id)
+        print(f"User: {user.username if user else 'Unknown'}, Center: {center.name if center else 'Unknown'}")
+    
     return render_template('admin/inventory_requests.html', inventory_requests=requests)
 
 @admin_bp.route('/inventory-requests/approve/<int:id>', methods=['POST'])

@@ -38,7 +38,7 @@
                                     <td>{{ request.quantity }} {{ request.unit }}</td>
                                     <td>{{ request.unit }}</td>
                                     <td>{{ request.center.name }}</td>
-                                    <td>{{ request.requester.username }}</td>
+                                    <td>{{ request.requester.username if request.requester else 'Unknown' }}</td>
                                     <td>{{ request.created_at.strftime('%Y-%m-%d') }}</td>
                                     <td>
                                         <span class="badge {% if request.status == 'pending' %}bg-warning{% elif request.status == 'approved' %}bg-success{% else %}bg-danger{% endif %}">

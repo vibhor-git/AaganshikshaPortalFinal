@@ -21,11 +21,7 @@ class User(UserMixin, db.Model):
     complaints = db.relationship('Complaint', backref='author', lazy=True)
     nutrition_tips = db.relationship('NutritionTip', backref='created_by', lazy=True)
     activities = db.relationship('Activity', backref='created_by', lazy=True)
-    inventory_requests = db.relationship('InventoryRequest',
-                                      foreign_keys='InventoryRequest.user_id',
-                                      backref=db.backref('requester', lazy='joined'),
-                                      lazy='dynamic',
-                                      cascade='all, delete-orphan')
+    # Relationship removed to avoid conflicts - now managed from InventoryRequest side
     
     @validates('aadhar_number')
     def validate_aadhar_number(self, key, aadhar_number):
@@ -146,4 +142,5 @@ class InventoryRequest(db.Model):
     
     # Relationships
     center = db.relationship('Center', backref='inventory_requests')
-    requested_by = db.relationship('User', foreign_keys=[user_id])
+    # Fix the relationship to avoid conflicts
+    requester = db.relationship('User', foreign_keys=[user_id], backref='requested_inventory_items')
