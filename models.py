@@ -143,3 +143,7 @@ class InventoryRequest(db.Model):
     status = db.Column(db.String(20), default='pending')  # 'pending', 'approved', 'rejected'
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    # Relationships
+    center = db.relationship('Center', backref='inventory_requests')
+    requested_by = db.relationship('User', foreign_keys=[user_id])

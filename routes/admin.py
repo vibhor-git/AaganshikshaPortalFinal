@@ -549,14 +549,8 @@ def inventory_requests():
     print(f"Found {len(requests)} inventory requests")
     for req in requests:
         print(f"Request: {req.id}, {req.item_name}, User: {req.user_id}, Status: {req.status}")
-        
-    # Joins to ensure relationships are loaded 
-    requests = InventoryRequest.query.join(
-        User, InventoryRequest.user_id == User.id
-    ).join(
-        Center, InventoryRequest.center_id == Center.id
-    ).order_by(InventoryRequest.created_at.desc()).all()
     
+    # No need for manual joins, just load the relationships automatically
     return render_template('admin/inventory_requests.html', inventory_requests=requests)
 
 @admin_bp.route('/inventory-requests/approve/<int:id>', methods=['POST'])

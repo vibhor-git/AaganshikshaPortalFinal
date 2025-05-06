@@ -38,8 +38,14 @@
                                     <td>{{ request.item_name }}</td>
                                     <td>{{ request.quantity }}</td>
                                     <td>{{ request.unit }}</td>
-                                    <td>{{ request.center.name if request.center else 'Unknown' }}</td>
-                                    <td>{{ request.requested_by.username if request.requested_by else 'Unknown' }}</td>
+                                    <td>
+                                        {% set center = request.center %}
+                                        {{ center.name if center else 'Unknown' }}
+                                    </td>
+                                    <td>
+                                        {% set user = request.requested_by %}
+                                        {{ user.username if user else 'Unknown' }}
+                                    </td>
                                     <td>{{ request.created_at.strftime('%Y-%m-%d') }}</td>
                                     <td>
                                         <span class="badge {% if request.status == 'pending' %}bg-warning{% elif request.status == 'approved' %}bg-success{% else %}bg-danger{% endif %}">
