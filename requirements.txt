@@ -1,10 +1,9 @@
-# requirements.txt
 # Core Flask
-Flask==2.2
-Werkzeug==2.0.3
-Jinja2==3.0.3
-itsdangerous==2.0.1
-click==8.0.4
+Flask==2.2.5
+Werkzeug==2.2.3
+Jinja2==3.1.2
+itsdangerous==2.1.2
+click==8.1.7
 
 # Database
 Flask-SQLAlchemy==3.0.3
@@ -12,12 +11,12 @@ SQLAlchemy==2.0.23
 psycopg2-binary==2.9.9
 
 # Authentication & Security
-Flask-Login==0.5.0
-Flask-WTF==1.0.0
+Flask-Login==0.6.3
+Flask-WTF==1.1.1
 WTForms==3.0.1
 
 # Email
-Flask-Mail==0.9.1
+Flask-Mail==0.9.1  # Or switch to Flask-Mailman==1.0.1 for better compatibility
 
 # Environment
 python-dotenv==0.21.0
